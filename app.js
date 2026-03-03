@@ -5,21 +5,19 @@ let currentSlide = 0;
 const activated = new Set();
 
 // ── TYPE → CSS CLASS MAP ──────────────────────────────────────────────────────
-const TYPE_CLASS = {
-  title:       'slide-title',
-  section:     'slide-mission',
-  content:     null, // resolved by headline keyword below
-  beforeAfter: 'slide-services',
-  closing:     'slide-closing',
-};
-
 function resolveClass(slide) {
   if (slide.type === 'content') {
-    const h = (slide.headline || '').toLowerCase();
-    if (h.includes('challenge')) return 'slide-challenge';
-    return 'slide-partnership';
+    return (slide.headline || '').toLowerCase().includes('challenge')
+      ? 'slide-challenge'
+      : 'slide-partnership';
   }
-  return TYPE_CLASS[slide.type] || 'slide-partnership';
+  const map = {
+    title:       'slide-title',
+    section:     'slide-mission',
+    beforeAfter: 'slide-services',
+    closing:     'slide-closing',
+  };
+  return map[slide.type] || 'slide-partnership';
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -30,6 +28,7 @@ async function init() {
   renderDeck();
   setupNavbar();
   setupKeyboard();
+  setupTouchSwipe();
   setupIntersectionObserver();
   setupNavbarOffset();
   setupCursorGlow();
@@ -37,13 +36,12 @@ async function init() {
   updateCounter();
 }
 
-// ── DECK RENDER ───────────────────────────────────────────────────────────────
+// ── RENDER DECK ───────────────────────────────────────────────────────────────
 function renderDeck() {
   const deck = document.getElementById('deck');
   deck.innerHTML = '';
   slides.forEach((slide, i) => {
     const el = document.createElement('div');
-    // Apply both base class AND the type-specific class
     el.className = 'slide ' + resolveClass(slide);
     el.id = 'slide-' + i;
     el.innerHTML = buildSlideHTML(slide, i);
@@ -51,26 +49,23 @@ function renderDeck() {
   });
 }
 
-function buildSlideHTML(slide, i) {
+function buildSlideHTML(slide) {
   switch (slide.type) {
     case 'title':       return htmlTitle(slide);
     case 'section':     return htmlMission(slide);
-    case 'content':     {
-      const h = (slide.headline || '').toLowerCase();
-      return h.includes('challenge') ? htmlChallenge(slide) : htmlPartnership();
-    }
+    case 'content':     return (slide.headline||'').toLowerCase().includes('challenge')
+                          ? htmlChallenge(slide) : htmlPartnership();
     case 'beforeAfter': return htmlServices(slide);
     case 'closing':     return htmlClosing();
     default:            return htmlPartnership();
   }
 }
 
-// ── TITLE SLIDE ───────────────────────────────────────────────────────────────
+// ── SLIDE: TITLE ──────────────────────────────────────────────────────────────
 function htmlTitle(s) {
-  const tags = (s.bullets || []).map(t => `<span class="tag">${t}</span>`).join('');
+  const tags = (s.bullets || []).map(t => `<span class="tag">${esc(t)}</span>`).join('');
   return `
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
     <div class="title-layout">
       <div class="title-left">
         <div class="eyebrow" data-animate data-delay="0">GSR &amp; Associates</div>
@@ -90,7 +85,7 @@ function htmlTitle(s) {
     <div class="scroll-cue"><span>SCROLL</span><div class="scroll-chevron"></div></div>`;
 }
 
-// ── MISSION SLIDE ─────────────────────────────────────────────────────────────
+// ── SLIDE: MISSION ────────────────────────────────────────────────────────────
 function htmlMission(s) {
   const cards = [
     { icon: '🤝', title: 'True Partners',  desc: 'We invest in your vision, not just your metrics.' },
@@ -115,7 +110,7 @@ function htmlMission(s) {
     </div>`;
 }
 
-// ── CHALLENGE SLIDE ───────────────────────────────────────────────────────────
+// ── SLIDE: CHALLENGE ──────────────────────────────────────────────────────────
 function htmlChallenge(s) {
   const items = (s.bullets || []).map((b, i) => `
     <div class="challenge-item" data-animate data-delay="${i + 2}">
@@ -132,7 +127,7 @@ function htmlChallenge(s) {
     </div>`;
 }
 
-// ── PARTNERSHIP SLIDE ─────────────────────────────────────────────────────────
+// ── SLIDE: PARTNERSHIP ────────────────────────────────────────────────────────
 function htmlPartnership() {
   const tl = [
     { label: 'Month 1–3',   title: 'Market Research & Strategy' },
@@ -151,9 +146,7 @@ function htmlPartnership() {
         <div class="eyebrow" data-animate data-delay="0">Partnership Model</div>
         <h2 data-animate data-delay="1">Every milestone, every risk, every <em>triumph.</em></h2>
         <p class="partnership-desc" data-animate data-delay="2">GSR invests alongside you. We succeed when you succeed. We are in the trenches, celebrating wins and navigating setbacks together.</p>
-        <div class="testimonial" data-animate data-delay="3">
-          <p>"GSR didn't just advise us, they invested in us."</p>
-        </div>
+        <div class="testimonial" data-animate data-delay="3"><p>"GSR didn't just advise us, they invested in us."</p></div>
       </div>
       <div class="timeline-section">
         <div class="case-label" data-animate data-delay="1">Case Study — 12-Month Journey</div>
@@ -162,7 +155,7 @@ function htmlPartnership() {
     </div>`;
 }
 
-// ── SERVICES SLIDE ────────────────────────────────────────────────────────────
+// ── SLIDE: SERVICES ───────────────────────────────────────────────────────────
 function htmlServices(s) {
   const lItems = (s.left?.bullets  || []).map(b => `<li>${esc(b)}</li>`).join('');
   const rItems = (s.right?.bullets || []).map(b => `<li>${esc(b)}</li>`).join('');
@@ -183,11 +176,10 @@ function htmlServices(s) {
     </div>`;
 }
 
-// ── CLOSING SLIDE ─────────────────────────────────────────────────────────────
+// ── SLIDE: CLOSING ────────────────────────────────────────────────────────────
 function htmlClosing() {
   return `
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
     <div class="closing-layout">
       <div class="closing-left">
         <div class="eyebrow" data-animate data-delay="0">Get In Touch</div>
@@ -215,7 +207,7 @@ function htmlClosing() {
       <div class="avail-card" data-animate data-delay="3">
         <div class="status-badge"><div class="status-dot"></div><span class="status-text">Accepting Partners</span></div>
         <h3>Partner With GSR</h3>
-        <p>We work with a select number of founders each year to ensure every partner receives our full attention and commitment.</p>
+        <p>We work with a select number of founders each year to ensure every partner receives full attention.</p>
         <a href="mailto:hello@gsrassociates.com" class="avail-cta">START THE CONVERSATION</a>
       </div>
     </div>`;
@@ -224,10 +216,8 @@ function htmlClosing() {
 // ── UTILITY ───────────────────────────────────────────────────────────────────
 function esc(str) {
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // ── NAVBAR ────────────────────────────────────────────────────────────────────
@@ -245,7 +235,7 @@ function setupNavbarOffset() {
 function updateCounter() {
   const n = slides.length;
   document.getElementById('slideCounter').textContent =
-    String(currentSlide + 1).padStart(2,'0') + ' / ' + String(n).padStart(2,'0');
+    String(currentSlide + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
   document.getElementById('progressBar').style.width =
     (n > 1 ? (currentSlide / (n - 1)) * 100 : 0) + '%';
 }
@@ -255,7 +245,7 @@ function setupIntersectionObserver() {
   const deck = document.getElementById('deck');
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
-      if (!e.isIntersecting || e.intersectionRatio < 0.5) return;
+      if (!e.isIntersecting || e.intersectionRatio < 0.4) return;
       e.target.classList.add('is-active');
       const idx = parseInt(e.target.id.replace('slide-', ''));
       currentSlide = idx;
@@ -265,36 +255,59 @@ function setupIntersectionObserver() {
         staggerAnimations(e.target);
       }
     });
-  }, { threshold: 0.5, root: deck });
+  }, { threshold: 0.4 }); // no root — works for both snap and free scroll
   document.querySelectorAll('.slide').forEach(s => obs.observe(s));
 }
 
 function staggerAnimations(slideEl) {
   slideEl.querySelectorAll('[data-animate]').forEach(el => {
-    const ms = parseInt(el.dataset.delay || '0') * 80;
-    el.style.transitionDelay = ms + 'ms';
+    el.style.transitionDelay = (parseInt(el.dataset.delay || '0') * 80) + 'ms';
   });
 }
 
-// ── KEYBOARD ──────────────────────────────────────────────────────────────────
+// ── KEYBOARD NAVIGATION ───────────────────────────────────────────────────────
 function setupKeyboard() {
   document.addEventListener('keydown', e => {
-    const NEXT = ['ArrowDown','ArrowRight','PageDown'];
-    const PREV = ['ArrowUp','ArrowLeft','PageUp','Backspace'];
-    if (e.key === ' ')           { e.preventDefault(); scrollToSlide(currentSlide + (e.shiftKey ? -1 : 1)); }
+    const NEXT = ['ArrowDown', 'ArrowRight', 'PageDown'];
+    const PREV = ['ArrowUp',   'ArrowLeft',  'PageUp', 'Backspace'];
+    if (e.key === ' ')              { e.preventDefault(); scrollToSlide(currentSlide + (e.shiftKey ? -1 : 1)); }
     else if (NEXT.includes(e.key)) { e.preventDefault(); scrollToSlide(currentSlide + 1); }
     else if (PREV.includes(e.key)) { e.preventDefault(); scrollToSlide(currentSlide - 1); }
   });
 }
-function scrollToSlide(idx) {
-  const clamped = Math.max(0, Math.min(slides.length - 1, idx));
-  document.getElementById('slide-' + clamped)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+// ── TOUCH SWIPE (mobile) ──────────────────────────────────────────────────────
+function setupTouchSwipe() {
+  const deck = document.getElementById('deck');
+  let startY = 0, startX = 0;
+
+  deck.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    startX = e.touches[0].clientX;
+  }, { passive: true });
+
+  deck.addEventListener('touchend', e => {
+    const dy = startY - e.changedTouches[0].clientY;
+    const dx = startX - e.changedTouches[0].clientX;
+    // Only act on predominantly vertical swipes of sufficient distance
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 60) {
+      // On mobile we rely on natural scroll — just update counter from observer
+      // No forced navigation needed; CSS scroll handles it
+    }
+  }, { passive: true });
 }
 
-// ── CURSOR GLOW ───────────────────────────────────────────────────────────────
+// ── SCROLL TO SLIDE ───────────────────────────────────────────────────────────
+function scrollToSlide(idx) {
+  const clamped = Math.max(0, Math.min(slides.length - 1, idx));
+  document.getElementById('slide-' + clamped)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── CURSOR GLOW (desktop only) ────────────────────────────────────────────────
 function setupCursorGlow() {
   const el = document.getElementById('cursor-glow');
-  if (!el) return;
+  if (!el || !window.matchMedia('(hover: hover)').matches) return;
   let mx = window.innerWidth / 2, my = window.innerHeight / 2;
   let gx = mx, gy = my;
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
@@ -311,20 +324,23 @@ function setupCursorGlow() {
 function setupParticles() {
   const canvas = document.getElementById('particle-canvas');
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
 
+  // Reduce particles on mobile for performance
+  const isMobile = window.innerWidth < 600;
+  const N = isMobile ? 20 : 40;
+
+  const ctx = canvas.getContext('2d');
   function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
   resize();
   window.addEventListener('resize', resize);
 
-  const N = 40;
   const pts = Array.from({ length: N }, () => ({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
-    r: Math.random() * 2 + 0.5,
-    vx: (Math.random() - 0.5) * 0.32,
-    vy: (Math.random() - 0.5) * 0.32,
-    a: Math.random() * 0.4 + 0.12,
+    r: Math.random() * 2 + 0.4,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    a: Math.random() * 0.35 + 0.1,
     phase: Math.random() * Math.PI * 2,
   }));
 
@@ -342,18 +358,21 @@ function setupParticles() {
       ctx.fillStyle = `rgba(224,123,57,${alpha.toFixed(3)})`;
       ctx.fill();
     });
-    for (let i = 0; i < N; i++) {
-      for (let j = i + 1; j < N; j++) {
-        const dx = pts[i].x - pts[j].x;
-        const dy = pts[i].y - pts[j].y;
-        const d  = Math.sqrt(dx*dx + dy*dy);
-        if (d < 130) {
-          ctx.beginPath();
-          ctx.moveTo(pts[i].x, pts[i].y);
-          ctx.lineTo(pts[j].x, pts[j].y);
-          ctx.strokeStyle = `rgba(224,123,57,${(0.07 * (1 - d/130)).toFixed(3)})`;
-          ctx.lineWidth = 0.7;
-          ctx.stroke();
+    // Connection lines (skip on mobile for perf)
+    if (!isMobile) {
+      for (let i = 0; i < N; i++) {
+        for (let j = i + 1; j < N; j++) {
+          const dx = pts[i].x - pts[j].x;
+          const dy = pts[i].y - pts[j].y;
+          const d  = Math.sqrt(dx * dx + dy * dy);
+          if (d < 130) {
+            ctx.beginPath();
+            ctx.moveTo(pts[i].x, pts[i].y);
+            ctx.lineTo(pts[j].x, pts[j].y);
+            ctx.strokeStyle = `rgba(224,123,57,${(0.07 * (1 - d / 130)).toFixed(3)})`;
+            ctx.lineWidth = 0.7;
+            ctx.stroke();
+          }
         }
       }
     }
@@ -368,7 +387,6 @@ async function runPdfExport() {
   try {
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-
     document.body.classList.add('exportingPdf');
     document.querySelectorAll('.slide').forEach(s => {
       s.classList.add('is-active');
@@ -376,23 +394,18 @@ async function runPdfExport() {
         el.style.opacity = '1'; el.style.transform = 'none'; el.style.transitionDelay = '0ms';
       });
     });
-
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1920, 1080] });
-
     for (let i = 0; i < slides.length; i++) {
-      const src = document.getElementById('slide-' + i);
       const stage = document.createElement('div');
       stage.id = 'pdfStage';
       document.body.appendChild(stage);
-
-      const clone = src.cloneNode(true);
+      const clone = document.getElementById('slide-' + i).cloneNode(true);
       clone.classList.add('is-active');
       clone.querySelectorAll('[data-animate]').forEach(el => {
         el.style.opacity = '1'; el.style.transform = 'none';
       });
       stage.appendChild(clone);
-
       const cvs = await html2canvas(stage, {
         scale: 2, useCORS: true,
         width: 1920, height: 1080,
@@ -411,6 +424,7 @@ async function runPdfExport() {
     btn.disabled = false; btn.textContent = 'Export PDF';
   }
 }
+
 function loadScript(src) {
   return new Promise((res, rej) => {
     if (document.querySelector(`script[src="${src}"]`)) return res();
