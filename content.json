@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "deckId": "gsr-associates",
+    "title": "GSR & Associates",
+    "theme": "warm-ivory"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "headline": "Growing Leaders,\nScaling Vision,\nTogether.",
+      "subheadline": "Every founder has a vision that can change industries, communities, even countries. Scaling that vision is lonely and full of obstacles.\n\nAt GSR & Associates, we don’t just advise — we walk the journey with you.",
+      "note": "Hero / CTA"
+    },
+    {
+      "type": "section",
+      "headline": "The Challenge",
+      "subheadline": "The world loses transformative ideas when founders face these alone."
+    },
+    {
+      "type": "content",
+      "headline": "Founders hit barriers that don’t yield to advice.",
+      "subheadline": "The gap between a brilliant idea and global impact requires more than insight — it requires a partner.",
+      "bullets": [
+        "Access to capital and markets",
+        "Commercialising innovative ideas",
+        "Navigating complex regulation globally",
+        "Scaling without losing mission or culture"
+      ]
+    },
+    {
+      "type": "section",
+      "headline": "Our Mission",
+      "subheadline": "We believe in founders, not just formulas."
+    },
+    {
+      "type": "content",
+      "headline": "We invest in founders, ideas, and dreams — and grow alongside them.",
+      "subheadline": "Not a consultancy that hands you a report and walks away. Partners in vision, risk, and success.",
+      "bullets": [
+        "Shared outcomes, shared accountability",
+        "Hands-on support in the trenches",
+        "Decisions built for long-term value",
+        "Respect for founder intent and culture"
+      ]
+    },
+    {
+      "type": "content",
+      "headline": "Partnership model",
+      "subheadline": "Every milestone, every risk, every triumph.",
+      "bullets": [
+        "We invest alongside you",
+        "We navigate setbacks together",
+        "We celebrate wins together",
+        "We stay until the job is done"
+      ],
+      "note": "Quote: “GSR didn’t just advise us — they invested in us.”"
+    },
+    {
+      "type": "content",
+      "headline": "Case study: 12‑month journey",
+      "subheadline": "A pragmatic path from clarity to scale.",
+      "bullets": [
+        "Months 1–3: Market research and strategy",
+        "Months 4–6: Product, positioning, and proof",
+        "Months 7–9: Go-to-market and partnerships",
+        "Months 10–12: Scale systems and governance"
+      ]
+    },
+    {
+      "type": "beforeAfter",
+      "headline": "What “partner” means in practice",
+      "left": {
+        "title": "Traditional advisory",
+        "bullets": [
+          "Periodic check-ins",
+          "Recommendations in a deck",
+          "Execution left to you",
+          "Misaligned incentives"
+        ]
+      },
+      "right": {
+        "title": "GSR partnership",
+        "bullets": [
+          "Embedded support cadence",
+          "Co-building and co-owning outcomes",
+          "Operator network + introductions",
+          "Aligned upside and downside"
+        ]
+      }
+    },
+    {
+      "type": "content",
+      "headline": "Where we help most",
+      "subheadline": "High-leverage support across the build and scale phases.",
+      "bullets": [
+        "Capital strategy and investor readiness",
+        "Commercial pathways and GTM design",
+        "Regulatory and cross-border navigation",
+        "Talent, operating cadence, governance"
+      ]
+    },
+    {
+      "type": "closing",
+      "headline": "Partner with GSR",
+      "subheadline": "If you’re building something ambitious, we should talk.",
+      "bullets": [
+        "Email: hello@gsr.associates",
+        "Location: Melbourne · Sydney · Global",
+        "Ask: Share your vision and constraints"
+      ],
+      "note": "CTA"
+    }
+  ]
+}
