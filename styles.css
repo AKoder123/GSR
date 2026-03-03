@@ -23,13 +23,21 @@
   --mono:   'JetBrains Mono', monospace;
 }
 
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+  max-width: 100%;
+}
 
 body {
   font-family: var(--sans);
   background: var(--cream);
   color: var(--navy);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  max-width: 100%;
+  position: relative;
 }
 
 /* ─── CURSOR GLOW (desktop only) ──────────────────── */
@@ -103,6 +111,7 @@ body {
   padding-top: var(--topOffset);
   height: 100dvh;
   overflow-y: scroll;
+  overflow-x: hidden;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
@@ -563,7 +572,7 @@ body.exportingPdf [data-animate] {
     min-height: calc(100dvh - var(--topOffset));
     padding: 28px 20px 48px;
     align-items: flex-start;
-    overflow: visible;
+    overflow: hidden;
   }
 
   /* ALL layouts → single column */
@@ -584,14 +593,14 @@ body.exportingPdf [data-animate] {
   .avail-card { display: none; }
   .scroll-cue { display: none; }
 
-  /* Orbs: scale down so they don't dominate small screens */
-  .slide-title .orb-1  { width: 300px; height: 300px; top: -80px; right: -80px; }
-  .slide-title .orb-2  { width: 200px; height: 200px; }
-  .slide-closing .orb-1 { width: 260px; height: 260px; }
-  .slide-closing .orb-2 { width: 180px; height: 180px; }
+  /* Orbs: capped to viewport so they never cause horizontal overflow */
+  .slide-title .orb-1  { width: 80vw; height: 80vw; top: -20vw; right: -20vw; }
+  .slide-title .orb-2  { width: 50vw; height: 50vw; bottom: -10vw; left: -5vw; }
+  .slide-closing .orb-1 { width: 70vw; height: 70vw; bottom: -15vw; right: -15vw; }
+  .slide-closing .orb-2 { width: 45vw; height: 45vw; top: -10vw; left: -5vw; }
 
-  /* Decorative letter – scale down */
-  .slide-mission::before { font-size: 14rem; top: -10px; right: 0; }
+  /* Decorative letter – scale down and clip */
+  .slide-mission::before { font-size: 40vw; top: -5px; right: -5px; opacity: 0.5; }
 
   /* Title slide */
   .title-left h1     { font-size: clamp(2rem, 8vw, 2.8rem); margin-bottom: 14px; }
