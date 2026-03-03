@@ -1,44 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>GSR & Associates</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GSR &amp; Associates — Growing Leaders, Scaling Vision</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="topbar" id="topbar">
-    <div class="topbar__inner">
-      <div class="brand" aria-label="GSR & Associates">
-        <span class="brand__mark" aria-hidden="true"></span>
-        <span class="brand__name">GSR &amp; Associates</span>
-      </div>
 
-      <div class="topbar__right">
-        <div class="progress" aria-label="Progress">
-          <div class="progress__bar" id="progressBar"></div>
-        </div>
-        <button class="btn btn--ghost" id="helpBtn" type="button" aria-label="Help">?</button>
-        <button class="btn" id="exportPdfBtn" type="button">Export PDF</button>
-      </div>
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="nav-logo">
+      <div class="nav-mark">GSR</div>
+      <span class="nav-name">GSR &amp; Associates</span>
     </div>
-  </header>
-
-  <main class="deck" id="deck" aria-label="Web deck"></main>
-
-  <nav class="dots" id="dots" aria-label="Slide navigation"></nav>
-
-  <div class="hint" id="hint" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="hint__card">
-      <div class="hint__title">Controls</div>
-      <ul class="hint__list">
-        <li><kbd>Space</kbd> next · <kbd>Shift</kbd> + <kbd>Space</kbd> previous</li>
-        <li><kbd>→</kbd>/<kbd>↓</kbd> next · <kbd>←</kbd>/<kbd>↑</kbd> previous</li>
-        <li>Scroll / trackpad works normally</li>
-      </ul>
-      <button class="btn" id="closeHintBtn" type="button">Got it</button>
+    <div class="nav-right">
+      <span id="slideCounter">01 / 06</span>
+      <button id="exportPdfBtn">Export PDF</button>
     </div>
-  </div>
+  </nav>
+
+  <!-- PROGRESS -->
+  <div id="progressBar"></div>
+
+  <!-- DECK -->
+  <div id="deck"></div>
 
   <script src="app.js"></script>
 </body>
